@@ -5,12 +5,12 @@ set -eu
 commit_message_file="$1"
 commit_message="$(head -n 1 "$commit_message_file" | tr -d '\r')"
 
-gitflow_merge_pattern="^Merge branch '(release|hotfix)/[^']+'"
-git_merge_pattern="^Merge branch '[^']+'"
-git_tag_pattern="^Merge tag '[^']+'"
 pattern='^(build|chore|ci|docs|feat|fix|perf|refactor|revert|style|test)(\([a-z0-9._/-]+\))?!?: .+'
+merge_pattern="^Merge (branch|tag) '"
 
-if printf '%s' "$commit_message" | grep -Eq "$gitflow_merge_pattern|$git_merge_pattern|$git_tag_pattern"; then
+# Git Flow creates merge commits with Git-generated subjects during release/hotfix
+# finish. Those commits are intentional and should not be blocked by the hook.
+if printf '%s' "$commit_message" | grep -Eq "$merge_pattern"; then
     exit 0
 fi
 
@@ -23,8 +23,6 @@ Invalid commit message.
 
 Use Conventional Commits:
   <type>(optional-scope): <description>
-
-Git-generated merge and tag commit messages are allowed.
 
 Examples:
   feat(auth): add token refresh endpoint

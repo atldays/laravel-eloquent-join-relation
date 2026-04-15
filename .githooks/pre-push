@@ -12,17 +12,14 @@ if ! command -v docker >/dev/null 2>&1; then
     exit 1
 fi
 
-if [ ! -x ./bin/docker-php ]; then
-    echo "./bin/docker-php not found or is not executable."
-    exit 1
-fi
-
 echo "Running test suite before push..."
-echo "Set SKIP_PRE_PUSH_TESTS=1 to bypass this hook when needed."
 
 if [ ! -x vendor/bin/phpunit ]; then
     echo "vendor/bin/phpunit not found. Run composer install/update first."
     exit 1
 fi
 
-./bin/docker-php "composer test" </dev/null
+docker run --rm \
+    -v "$PWD:/app" \
+    -w /app \
+    composer:2 sh -lc 'composer test' </dev/null

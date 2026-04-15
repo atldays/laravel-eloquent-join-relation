@@ -7,12 +7,6 @@ if ! command -v docker >/dev/null 2>&1; then
     exit 1
 fi
 
-if [ ! -x ./bin/docker-php ]; then
-    echo "./bin/docker-php not found or is not executable."
-    exit 1
-fi
-
-# shellcheck disable=SC2046
 set -- $(git diff --cached --name-only --diff-filter=ACMR -- '*.php')
 
 if [ "$#" -eq 0 ]; then
@@ -26,6 +20,9 @@ if [ ! -x vendor/bin/pint ]; then
     exit 1
 fi
 
-./bin/docker-php "vendor/bin/pint $*"
+docker run --rm \
+    -v "$PWD:/app" \
+    -w /app \
+    composer:2 sh -lc 'vendor/bin/pint "$@"' sh "$@"
 
 git add -- "$@"
