@@ -14,6 +14,7 @@ class Offer extends Model
 
     protected $fillable = [
         'advertiser_id',
+        'partner_advertiser_id',
         'name',
         'active',
         'deleted_at',
@@ -22,5 +23,10 @@ class Offer extends Model
     public function advertiser(): BelongsTo
     {
         return $this->belongsTo(Advertiser::class, 'advertiser_id');
+    }
+
+    public function partnerAdvertiser(): BelongsTo
+    {
+        return $this->belongsTo(Advertiser::class, 'partner_advertiser_id');
     }
 }

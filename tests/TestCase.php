@@ -50,6 +50,7 @@ abstract class TestCase extends Orchestra
         $this->app['db']->connection()->getSchemaBuilder()->create('publishers', function (Blueprint $table): void {
             $table->id();
             $table->foreignId('network_id')->nullable();
+            $table->foreignId('primary_network_id')->nullable();
             $table->string('name');
             $table->boolean('active')->default(true);
             $table->timestamp('deleted_at')->nullable();
@@ -58,6 +59,7 @@ abstract class TestCase extends Orchestra
         $this->app['db']->connection()->getSchemaBuilder()->create('advertisers', function (Blueprint $table): void {
             $table->id();
             $table->foreignId('publisher_id')->nullable();
+            $table->foreignId('source_publisher_id')->nullable();
             $table->string('name');
             $table->boolean('active')->default(true);
             $table->timestamp('deleted_at')->nullable();
@@ -66,6 +68,7 @@ abstract class TestCase extends Orchestra
         $this->app['db']->connection()->getSchemaBuilder()->create('offers', function (Blueprint $table): void {
             $table->id();
             $table->foreignId('advertiser_id')->nullable();
+            $table->foreignId('partner_advertiser_id')->nullable();
             $table->string('name');
             $table->boolean('active')->default(true);
             $table->timestamp('deleted_at')->nullable();

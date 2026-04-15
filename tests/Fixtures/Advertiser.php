@@ -11,6 +11,7 @@ class Advertiser extends Model
 
     protected $fillable = [
         'publisher_id',
+        'source_publisher_id',
         'name',
         'active',
         'deleted_at',
@@ -19,5 +20,10 @@ class Advertiser extends Model
     public function publisher(): BelongsTo
     {
         return $this->belongsTo(Publisher::class, 'publisher_id');
+    }
+
+    public function sourcePublisher(): BelongsTo
+    {
+        return $this->belongsTo(Publisher::class, 'source_publisher_id');
     }
 }

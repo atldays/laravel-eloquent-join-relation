@@ -170,6 +170,76 @@ class HasJoinRelationTest extends TestCase
             ->first();
     }
 
+    public function test_it_sets_nested_path_relation_to_null_for_missing_left_join_match(): void
+    {
+        $advertiser = Advertiser::query()->create([
+            'publisher_id' => null,
+            'name' => 'Primary Advertiser',
+            'active' => true,
+            'deleted_at' => null,
+        ]);
+
+        $offer = Offer::query()->create([
+            'advertiser_id' => $advertiser->id,
+            'name' => 'Primary Offer',
+            'active' => true,
+            'deleted_at' => null,
+        ]);
+
+        $resolvedOffer = Offer::query()
+            ->select('offers.*')
+            ->whereKey($offer->id)
+            ->joinRelation(
+                relation: 'advertiser',
+                type: 'inner',
+                columns: ['id', 'publisher_id', 'name', 'active', 'deleted_at'],
+            )
+            ->joinRelation(
+                relation: 'advertiser.publisher',
+                type: 'left',
+                columns: ['id', 'network_id', 'name', 'active', 'deleted_at'],
+            )
+            ->firstOrFail();
+
+        $this->assertTrue($resolvedOffer->relationLoaded('advertiser'));
+        $this->assertTrue($resolvedOffer->advertiser->relationLoaded('publisher'));
+        $this->assertNull($resolvedOffer->advertiser->publisher);
+    }
+
+    public function test_it_supports_manual_hydration_null_for_nested_joined_models(): void
+    {
+        $user = User::query()->create([
+            'name' => 'Jane Doe',
+            'email' => 'jane@example.com',
+        ]);
+
+        $postId = Post::query()->create([
+            'user_id' => $user->id,
+            'title' => 'Hello world',
+        ])->getKey();
+
+        $post = Post::query()
+            ->select('posts.*')
+            ->joinRelation(relation: 'author', columns: ['id', 'name', 'email'])
+            ->joinRelation(
+                related: Profile::class,
+                hydrate: function (Model $model, ?Profile $profile): void {
+                    $model->author?->setRelation('profile', $profile);
+                },
+                join: function (JoinClause $join): void {
+                    $join->on('users.id', '=', 'profiles.user_id');
+                },
+                type: 'left',
+                columns: ['id', 'user_id', 'bio'],
+            )
+            ->whereKey($postId)
+            ->firstOrFail();
+
+        $this->assertTrue($post->relationLoaded('author'));
+        $this->assertTrue($post->author->relationLoaded('profile'));
+        $this->assertNull($post->author->profile);
+    }
+
     public function test_it_supports_advanced_multi_join_hydration_with_filters(): void
     {
         $network = Network::query()->create([
@@ -336,6 +406,60 @@ class HasJoinRelationTest extends TestCase
         } finally {
             Model::preventLazyLoading(false);
         }
+    }
+
+    public function test_it_supports_nested_paths_with_custom_foreign_keys_and_relation_names(): void
+    {
+        $network = Network::query()->create([
+            'name' => 'Primary Network',
+            'active' => true,
+            'deleted_at' => null,
+        ]);
+
+        $publisher = Publisher::query()->create([
+            'primary_network_id' => $network->id,
+            'name' => 'Primary Publisher',
+            'active' => true,
+            'deleted_at' => null,
+        ]);
+
+        $advertiser = Advertiser::query()->create([
+            'source_publisher_id' => $publisher->id,
+            'name' => 'Primary Advertiser',
+            'active' => true,
+            'deleted_at' => null,
+        ]);
+
+        $offer = Offer::query()->create([
+            'partner_advertiser_id' => $advertiser->id,
+            'name' => 'Primary Offer',
+            'active' => true,
+            'deleted_at' => null,
+        ]);
+
+        $resolvedOffer = Offer::query()
+            ->select('offers.*')
+            ->whereKey($offer->id)
+            ->joinRelation(
+                relation: 'partnerAdvertiser',
+                columns: ['id', 'source_publisher_id', 'name', 'active', 'deleted_at'],
+            )
+            ->joinRelation(
+                relation: 'partnerAdvertiser.sourcePublisher',
+                columns: ['id', 'primary_network_id', 'name', 'active', 'deleted_at'],
+            )
+            ->joinRelation(
+                relation: 'partnerAdvertiser.sourcePublisher.primaryNetwork',
+                columns: ['id', 'name', 'active', 'deleted_at'],
+            )
+            ->firstOrFail();
+
+        $this->assertTrue($resolvedOffer->relationLoaded('partnerAdvertiser'));
+        $this->assertSame('Primary Advertiser', $resolvedOffer->partnerAdvertiser->name);
+        $this->assertTrue($resolvedOffer->partnerAdvertiser->relationLoaded('sourcePublisher'));
+        $this->assertSame('Primary Publisher', $resolvedOffer->partnerAdvertiser->sourcePublisher->name);
+        $this->assertTrue($resolvedOffer->partnerAdvertiser->sourcePublisher->relationLoaded('primaryNetwork'));
+        $this->assertSame('Primary Network', $resolvedOffer->partnerAdvertiser->sourcePublisher->primaryNetwork->name);
     }
 
     protected function resolveAdvancedOfferScenario(): Offer

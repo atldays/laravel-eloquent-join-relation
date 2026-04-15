@@ -11,6 +11,7 @@ class Publisher extends Model
 
     protected $fillable = [
         'network_id',
+        'primary_network_id',
         'name',
         'active',
         'deleted_at',
@@ -19,5 +20,10 @@ class Publisher extends Model
     public function network(): BelongsTo
     {
         return $this->belongsTo(Network::class, 'network_id');
+    }
+
+    public function primaryNetwork(): BelongsTo
+    {
+        return $this->belongsTo(Network::class, 'primary_network_id');
     }
 }
