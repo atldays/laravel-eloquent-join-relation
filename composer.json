@@ -1,0 +1,54 @@
+{
+    "name": "atldays/laravel-eloquent-join-relation",
+    "description": "Join related Eloquent models and hydrate them as loaded relations.",
+    "keywords": [
+        "atldays",
+        "laravel",
+        "eloquent",
+        "join",
+        "relation"
+    ],
+    "homepage": "https://github.com/atldays/laravel-eloquent-join-relation",
+    "license": "MIT",
+    "type": "library",
+    "authors": [
+        {
+            "name": "Anjey Tsibylskij",
+            "homepage": "https://github.com/atldays",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php": "^8.2",
+        "illuminate/database": "^10.0|^11.0|^12.0|^13.0",
+        "illuminate/support": "^10.0|^11.0|^12.0|^13.0"
+    },
+    "require-dev": {
+        "laravel/pint": "^1.21",
+        "mockery/mockery": "^1.6",
+        "orchestra/testbench": "^8.0|^9.0|^10.0|^11.0",
+        "phpunit/phpunit": "^9.6|^10.5|^11.5|^12.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Atldays\\JoinRelation\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Atldays\\JoinRelation\\Tests\\": "tests/"
+        }
+    },
+    "scripts": {
+        "format": "vendor/bin/pint",
+        "format:test": "vendor/bin/pint --test",
+        "test": "vendor/bin/phpunit --no-coverage",
+        "test-coverage": "vendor/bin/phpunit --coverage-text",
+        "hooks:install": "git config core.hooksPath .githooks"
+    },
+    "config": {
+        "sort-packages": true
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}
