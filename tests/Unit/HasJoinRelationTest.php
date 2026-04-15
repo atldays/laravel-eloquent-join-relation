@@ -14,7 +14,7 @@ use Atldays\JoinRelation\Tests\Fixtures\Profile;
 use Atldays\JoinRelation\Tests\Fixtures\Publisher;
 use Atldays\JoinRelation\Tests\Fixtures\User;
 use Atldays\JoinRelation\Tests\TestCase;
-use Illuminate\Database\Eloquent\LazyLoadingViolationException;
+use Illuminate\Database\LazyLoadingViolationException;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Query\JoinClause;
 use Illuminate\Support\Facades\DB;
