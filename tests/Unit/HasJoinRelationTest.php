@@ -2,6 +2,7 @@
 
 namespace Atldays\JoinRelation\Tests\Unit;
 
+use Atldays\JoinRelation\Data\ResolvedRelation;
 use Atldays\JoinRelation\Exceptions\InvalidJoinRelationConfigurationException;
 use Atldays\JoinRelation\Exceptions\MissingParentRelationException;
 use Atldays\JoinRelation\Exceptions\RelationNotFoundException;
@@ -21,6 +22,34 @@ use Illuminate\Support\Facades\DB;
 
 class HasJoinRelationTest extends TestCase
 {
+    public function test_it_uses_double_underscore_to_separate_relation_path_from_column_name(): void
+    {
+        $authorRelation = new ResolvedRelation(
+            alias: 'author',
+            name: 'author',
+            relation: null,
+            related: new User,
+            columns: ['team_id'],
+            segments: ['author'],
+        );
+
+        $teamRelation = new ResolvedRelation(
+            alias: 'author_team',
+            name: 'team',
+            relation: null,
+            related: new User,
+            columns: ['id'],
+            segments: ['author', 'team'],
+        );
+
+        $this->assertSame('join_author__team_id', $authorRelation->aliasFor('team_id'));
+        $this->assertSame('join_author_team__id', $teamRelation->aliasFor('id'));
+        $this->assertNotSame(
+            $authorRelation->aliasFor('team_id'),
+            $teamRelation->aliasFor('id'),
+        );
+    }
+
     public function test_it_joins_a_belongs_to_relation_by_name(): void
     {
         $user = User::query()->create([

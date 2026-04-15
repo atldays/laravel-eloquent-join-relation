@@ -55,6 +55,7 @@ If you already join a related table, you can hydrate that relation without an ex
 
 ```php
 use Atldays\JoinRelation\HasJoinRelation;
+use App\Models\Author;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
@@ -64,7 +65,7 @@ class Post extends Model
 
     public function author(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'author_id');
+        return $this->belongsTo(Author::class, 'author_id');
     }
 }
 ```
@@ -89,9 +90,9 @@ The generated SQL will look roughly like this:
 ```sql
 select
     `posts`.*,
-    `authors`.`id` as `join_author_id`,
-    `authors`.`name` as `join_author_name`,
-    `authors`.`email` as `join_author_email`
+    `authors`.`id` as `join_author__id`,
+    `authors`.`name` as `join_author__name`,
+    `authors`.`email` as `join_author__email`
 from `posts`
 inner join `authors`
     on `authors`.`id` = `posts`.`author_id`
@@ -141,14 +142,14 @@ The generated SQL will look roughly like this:
 ```sql
 select
     `posts`.*,
-    `authors`.`id` as `join_author_id`,
-    `authors`.`team_id` as `join_author_team_id`,
-    `authors`.`name` as `join_author_name`,
-    `teams`.`id` as `join_author_team_id`,
-    `teams`.`organization_id` as `join_author_team_organization_id`,
-    `teams`.`name` as `join_author_team_name`,
-    `organizations`.`id` as `join_author_team_organization_id`,
-    `organizations`.`name` as `join_author_team_organization_name`
+    `authors`.`id` as `join_author__id`,
+    `authors`.`team_id` as `join_author__team_id`,
+    `authors`.`name` as `join_author__name`,
+    `teams`.`id` as `join_author_team__id`,
+    `teams`.`organization_id` as `join_author_team__organization_id`,
+    `teams`.`name` as `join_author_team__name`,
+    `organizations`.`id` as `join_author_team_organization__id`,
+    `organizations`.`name` as `join_author_team_organization__name`
 from `posts`
 inner join `authors`
     on `authors`.`id` = `posts`.`author_id`
@@ -193,8 +194,8 @@ The generated SQL will look roughly like this:
 ```sql
 select
     `posts`.*,
-    `authors`.`id` as `join_author_id`,
-    `authors`.`name` as `join_author_name`
+    `authors`.`id` as `join_author__id`,
+    `authors`.`name` as `join_author__name`
 from `posts`
 left join `authors`
     on `authors`.`id` = `posts`.`author_id`
@@ -219,12 +220,12 @@ The generated SQL will look roughly like this:
 ```sql
 select
     `posts`.*,
-    `authors`.`id` as `join_author_id`,
-    `authors`.`team_id` as `join_author_team_id`,
-    `authors`.`name` as `join_author_name`,
-    `teams`.`id` as `join_author_team_id`,
-    `teams`.`organization_id` as `join_author_team_organization_id`,
-    `teams`.`name` as `join_author_team_name`
+    `authors`.`id` as `join_author__id`,
+    `authors`.`team_id` as `join_author__team_id`,
+    `authors`.`name` as `join_author__name`,
+    `teams`.`id` as `join_author_team__id`,
+    `teams`.`organization_id` as `join_author_team__organization_id`,
+    `teams`.`name` as `join_author_team__name`
 from `posts`
 inner join `authors`
     on `authors`.`id` = `posts`.`author_id`
@@ -273,12 +274,12 @@ The generated SQL will look roughly like this:
 ```sql
 select
     `posts`.*,
-    `authors`.`id` as `join_author_id`,
-    `authors`.`name` as `join_author_name`,
-    `authors`.`email` as `join_author_email`,
-    `profiles`.`id` as `join_profile_id`,
-    `profiles`.`user_id` as `join_profile_user_id`,
-    `profiles`.`bio` as `join_profile_bio`
+    `authors`.`id` as `join_author__id`,
+    `authors`.`name` as `join_author__name`,
+    `authors`.`email` as `join_author__email`,
+    `profiles`.`id` as `join_profile__id`,
+    `profiles`.`user_id` as `join_profile__user_id`,
+    `profiles`.`bio` as `join_profile__bio`
 from `posts`
 inner join `authors`
     on `authors`.`id` = `posts`.`author_id`
@@ -328,20 +329,20 @@ The resulting SQL will look roughly like this:
 ```sql
 select
     `posts`.*,
-    `authors`.`id` as `join_author_id`,
-    `authors`.`team_id` as `join_author_team_id`,
-    `authors`.`name` as `join_author_name`,
-    `authors`.`active` as `join_author_active`,
-    `authors`.`deleted_at` as `join_author_deleted_at`,
-    `teams`.`id` as `join_author_team_id`,
-    `teams`.`organization_id` as `join_author_team_organization_id`,
-    `teams`.`name` as `join_author_team_name`,
-    `teams`.`active` as `join_author_team_active`,
-    `teams`.`deleted_at` as `join_author_team_deleted_at`,
-    `organizations`.`id` as `join_author_team_organization_id`,
-    `organizations`.`name` as `join_author_team_organization_name`,
-    `organizations`.`active` as `join_author_team_organization_active`,
-    `organizations`.`deleted_at` as `join_author_team_organization_deleted_at`
+    `authors`.`id` as `join_author__id`,
+    `authors`.`team_id` as `join_author__team_id`,
+    `authors`.`name` as `join_author__name`,
+    `authors`.`active` as `join_author__active`,
+    `authors`.`deleted_at` as `join_author__deleted_at`,
+    `teams`.`id` as `join_author_team__id`,
+    `teams`.`organization_id` as `join_author_team__organization_id`,
+    `teams`.`name` as `join_author_team__name`,
+    `teams`.`active` as `join_author_team__active`,
+    `teams`.`deleted_at` as `join_author_team__deleted_at`,
+    `organizations`.`id` as `join_author_team_organization__id`,
+    `organizations`.`name` as `join_author_team_organization__name`,
+    `organizations`.`active` as `join_author_team_organization__active`,
+    `organizations`.`deleted_at` as `join_author_team_organization__deleted_at`
 from `posts`
 inner join `authors`
     on `authors`.`id` = `posts`.`author_id`

@@ -32,7 +32,7 @@ readonly class ResolvedRelation
 
     public function aliasFor(string $column): string
     {
-        return 'join_' . $this->alias . '_' . $column;
+        return 'join_' . $this->alias . '__' . $column;
     }
 
     public function isNested(): bool
