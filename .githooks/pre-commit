@@ -1,0 +1,31 @@
+#!/bin/sh
+
+set -eu
+
+if ! command -v docker >/dev/null 2>&1; then
+    echo "Docker is required to run Laravel Pint before commit."
+    exit 1
+fi
+
+if [ ! -x ./bin/docker-php ]; then
+    echo "./bin/docker-php not found or is not executable."
+    exit 1
+fi
+
+# shellcheck disable=SC2046
+set -- $(git diff --cached --name-only --diff-filter=ACMR -- '*.php')
+
+if [ "$#" -eq 0 ]; then
+    exit 0
+fi
+
+echo "Running Laravel Pint on staged PHP files..."
+
+if [ ! -x vendor/bin/pint ]; then
+    echo "vendor/bin/pint not found. Run composer install/update first."
+    exit 1
+fi
+
+./bin/docker-php "vendor/bin/pint $*"
+
+git add -- "$@"
